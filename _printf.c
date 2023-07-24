@@ -1,94 +1,50 @@
 #include "main.h"
 
 /**
- * _putchar - writes the character c to stdout
- * @c: The character to print
- *
- * Return: On success 1.
- * On error, -1 is returned, and errno is set appropriately.
+ * _printf - prints formatted data to stdout
+ * @format: string that contains the format to print
+ * Return: number of characters written
  */
-int _putchar(char c)
+int _printf(char *format, ...)
 {
-    return write(1, &c, 1);
+	int written = 0, (*structype)(char *, va_list);
+	char q[3];
+	va_list pa;
+
+	if (format == NULL)
+		return (-1);
+	q[2] = '\0';
+	va_start(pa, format);
+	_putchar(-1);
+	while (format[0])
+	{
+		if (format[0] == '%')
+		{
+			structype = driver(format);
+			if (structype)
+			{
+				q[0] = '%';
+				q[1] = format[1];
+				written += structype(q, pa);
+			}
+			else if (format[1] != '\0')
+			{
+				written += _putchar('%');
+				written += _putchar(format[1]);
+			}
+			else
+			{
+				written += _putchar('%');
+				break;
+			}
+			format += 2;
+		}
+		else
+		{
+			written += _putchar(format[0]);
+			format++;
+		}
+	}
+	_putchar(-2);
+	return (written);
 }
-
-/**
- * print_str - custom function to print a string
- * @str: The string to print
- *
- * Return: number of characters printed
- */
-int print_str(char *str)
-{
-    int printed_chars = 0;
-
-    while (*str)
-    {
-        if (*str < ' ' || *str >= 127)
-        {
-            printed_chars += _putchar('\\');
-            printed_chars += _putchar('x');
-            printed_chars += _putchar(*str / 16 + '0');
-            printed_chars += _putchar(*str % 16 < 10 ? *str % 16 + '0' : *str % 16 - 10 + 'A');
-        }
-        else
-        {
-            printed_chars += _putchar(*str);
-        }
-        str++;
-    }
-
-    return printed_chars;
-}
-
-/**
- * _printf - custom printf function
- * @format: format string
- *
- * Return: number of characters printed
- */
-int _printf(const char *format, ...)
-{
-    va_list args;
-    int printed_chars = 0;
-    char *str_arg;
-
-    va_start(args, format);
-
-    while (*format)
-    {
-        if (*format == '%')
-        {
-            format++;
-            if (*format == 'S')
-            {
-                str_arg = va_arg(args, char *);
-                if (str_arg == NULL)
-                    return -1;
-
-                printed_chars += print_str(str_arg);
-            }
-            else
-            {
-                printed_chars += _putchar('%');
-                printed_chars += _putchar(*format);
-            }
-        }
-        else
-        {
-            printed_chars += _putchar(*format);
-        }
-        format++;
-    }
-
-    va_end(args);
-
-    return printed_chars;
-}
-
-
-
-
-
-
-
