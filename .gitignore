@@ -1,4 +1,4 @@
-# Prerequisites
+# Prerequisite
 *.d
 *main.c
 /testc
